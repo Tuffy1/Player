@@ -4,5 +4,5 @@ let player = new Player({
 	cover: "/img/secret.jpg",
 	singer: "Jay",
 	url: "/lyrics/WayBackIntoLove.mp3",
-	lyrics: "/lyrics/secret.lrc"
+	lyrics: "/lyrics/WayBackIntoLove.lrc"
 });

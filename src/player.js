@@ -57,6 +57,16 @@ export class Player {
 		
 		this.watch();
 		this.play(this.url);
+		// this.parseLyric(this.lyrics);
+		let lyrics = this.lyrics;
+		let that = this;
+		let lrcArr;
+		fetch(lyrics).then((responseText) => {
+			return responseText.text();
+		}).then(function(response) {
+			lrcArr = that.parseLyric(response);
+		});
+		renderLyric(lrcArr);
 	}
 	watch() {
 		//展开歌词
@@ -102,46 +112,49 @@ export class Player {
 	showLyrics() {
 		document.getElementById('lyrics').style.display = "block";
 	}
-	// renderLyric(music){
-	//     document.getElementsByClassName('song-content').html("");
-	//     var lyricLineHeight = 27,
-	//         offset = document.getElementsByClassName('song-content').offset().height*0.4;
-	//     music.lyric.fetch(function(data){
-	//         music.lyric.parsed = {};
-	//         var i = 0;
-	//         for(var k in data){
-	//             var txt = data[k];
-	//             if(!txt)txt = "&nbsp;";
-	//             music.lyric.parsed[k] = {
-	//                 index:i++,
-	//                 text:txt,
-	//                 top: i*lyricLineHeight-offset
-	//             };
-	//             var li = $("<li>"+txt+"</li>");
-	//             lyric.append(li);
-	//         }
-	//         $player.bind("timeupdate",updateLyric);
-	//     },function(){
-	//         lyric.html("<li style='text-align: center'>歌词加载失败</li>");
-	//     });
-	// }
-	// parseLyric() {
-	// 	let text = this.lyric;
-	// 	lyric = text.split('\r\n'); //先按行分割
-	// 	var _l = lyric.length; //获取歌词行数
-	// 	lrc = new Array(); //新建一个数组存放最后结果
-	// 	for(i=0;i<_l;i++) {
-	// 	    var d = lyric[i].match(/\[\d{2}:\d{2}((\.|\:)\d{2})\]/g);  //正则匹配播放时间
-	// 	    var t = lyric[i].split(d); //以时间为分割点分割每行歌词，数组最后一个为歌词正文
-	// 	    if(d != null) { //过滤掉空行等非歌词正文部分
-	// 	        //换算时间，保留两位小数
-	// 	        var dt = String(d).split(':'); 
-	// 	        var _t = Math.round(parseInt(dt[0].split('[')[1])*60+parseFloat(dt[1].split(']')[0])*100)/100; 
-	// 	        lrc.push([_t, t[1]]);
-	// 	    }
-	// 	console.log(lrc);
-	// 	return lrc;
-	// 	}
-	// }
+	renderLyric(music){
+	    document.getElementById('lyrics-detail').innerHtml("");
+	    var lyricLineHeight = 27,
+	        offset = document.getElementById('lyrics-detail').offset().height*0.4;
+	    music.lyric.fetch(function(data){
+	        music.lyric.parsed = {};
+	        var i = 0;
+	        for(var k in data){
+	            var txt = data[k];
+	            if(!txt)txt = "&nbsp;";
+	            music.lyric.parsed[k] = {
+	                index:i++,
+	                text:txt,
+	                top: i*lyricLineHeight-offset
+	            };
+	            var li = $("<li>"+txt+"</li>");
+	            lyric.append(li);
+	        }
+	        $player.bind("timeupdate",updateLyric);
+	    },function(){
+	        lyric.html("<li style='text-align: center'>歌词加载失败</li>");
+	    });
+	}
+	parseLyric(lyric) {
+		let text = lyric;
+		console.log("text:" + text);
+		lyric = text.split('\n'); //先按行分割
+		console.log("lyric:" + lyric);
+		let _l = lyric.length; //获取歌词行数
+		console.log("_l:" + _l);
+		let lrc = new Array(); //新建一个数组存放最后结果
+		for(let i=0;i<_l;i++) {
+		    var d = lyric[i].match(/\[\d{2}:\d{2}((\.|\:)\d{2})\]/g);  //正则匹配播放时间
+		    var t = lyric[i].split(d); //以时间为分割点分割每行歌词，数组最后一个为歌词正文
+		    if(d != null) { //过滤掉空行等非歌词正文部分
+		        //换算时间，保留两位小数
+		        var dt = String(d).split(':'); 
+		        var _t = Math.round(parseInt(dt[0].split('[')[1])*60+parseFloat(dt[1].split(']')[0])*100)/100; 
+		        lrc.push([_t, t[1]]);
+		    }
+		console.log(lrc);
+		return lrc;
+		}
+	}
 }
 // module.exports = Player;
